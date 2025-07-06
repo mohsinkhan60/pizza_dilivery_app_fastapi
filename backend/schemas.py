@@ -26,6 +26,7 @@ class UserResponseModel(BaseModel):
     id: int
     username: str
     email: str
+    password: str
     is_staff: bool
     is_active: bool
 

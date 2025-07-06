@@ -1,6 +1,6 @@
 from database import Base, engine, Session
 from sqlalchemy import Column, Integer, String, Boolean, Text, ForeignKey
-from sqlalchemy_utils.types import ChoiceType
+from sqlalchemy_utils import ChoiceType # type: ignore
 from sqlalchemy.orm import relationship
 
 class User(Base):

@@ -10,4 +10,4 @@ engine=create_engine('postgresql://postgres:Mohsin123khan@localhost/pizza_delive
 Base=declarative_base()
 
 # Talk to the database (insert, read, delete, etc.)
-Session=sessionmaker()
+Session=sessionmaker(bind=engine)

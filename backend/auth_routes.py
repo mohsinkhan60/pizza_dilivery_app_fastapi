@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from database import Session, engine
-from schemas import SignUpModel
+from database import Session
+from schemas import SignUpModel, UserResponseModel
 from models import User
 from fastapi import HTTPException, status
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,13 +10,13 @@ auth_router = APIRouter(
       tags=["auth"]
 )
 
-session = Session(bind=engine)
+session = Session()
 
 @auth_router.get("/")
 async def auth():
     return {"message": "auth endpoint"}
 
-@auth_router.post("/signup", response_model=SignUpModel, status_code=status.HTTP_201_CREATED)
+@auth_router.post("/signup", response_model=UserResponseModel, status_code=status.HTTP_201_CREATED)
 async def signup(user: SignUpModel):
     db_email = session.query(User).filter(User.email == user.email).first()
     if db_email:

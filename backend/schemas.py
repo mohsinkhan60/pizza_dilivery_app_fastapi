@@ -3,13 +3,11 @@ from typing import Optional
 
 
 class SignUpModel(BaseModel):
-    id:Optional[int]
-    username:str
-    email:str
-    password:str
-    is_staff:Optional[bool]
-    is_active:Optional[bool]
-
+    username: str
+    email: str
+    password: str
+    is_staff: Optional[bool] = False
+    is_active: Optional[bool] = True
 
     class Config:
         from_attributes = True
@@ -22,4 +20,15 @@ class SignUpModel(BaseModel):
                 "is_active": True
             }
         }
+
+
+class UserResponseModel(BaseModel):
+    id: int
+    username: str
+    email: str
+    is_staff: bool
+    is_active: bool
+
+    class Config:
+        from_attributes = True
 

@@ -33,3 +33,18 @@ class UserResponseModel(BaseModel):
     class Config:
         from_attributes = True
 
+class Settings(BaseModel):
+    authjwt_secret_key: str = "a4d4b888f376b77a9c425c42fc39f2a286cc48301a3246cf3669cc4024609407"
+
+class LoginModel(BaseModel):
+    username: str
+    password: str
+
+    # class Config:
+    #     from_attributes = True
+    #     json_schema_extra = {
+    #         'example': {
+    #             "username": "johndoe",
+    #             "password": "password"
+    #         }
+    #     }

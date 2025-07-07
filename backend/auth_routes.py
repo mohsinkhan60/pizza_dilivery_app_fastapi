@@ -15,7 +15,15 @@ auth_router = APIRouter(
 session = Session()
 
 @auth_router.get("/")
-async def auth():
+async def auth(Authorize: AuthJWT = Depends()):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return {"message": "Hellow Mohsin Khan, this is your auth route!"}
 
 @auth_router.post("/signup", response_model=UserResponseModel, status_code=status.HTTP_201_CREATED)

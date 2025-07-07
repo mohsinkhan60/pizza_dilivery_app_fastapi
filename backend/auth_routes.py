@@ -16,7 +16,7 @@ session = Session()
 
 @auth_router.get("/")
 async def auth():
-    return {"message": "auth endpoint"}
+    return {"message": "Hellow Mohsin Khan, this is your auth route!"}
 
 @auth_router.post("/signup", response_model=UserResponseModel, status_code=status.HTTP_201_CREATED)
 async def signup(user: SignUpModel):

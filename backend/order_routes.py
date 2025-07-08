@@ -72,3 +72,28 @@ async def get_orders(Authorize: AuthJWT = Depends()):
         status_code=status.HTTP_403_FORBIDDEN,
         detail="You do not have permission to view all orders.",
     )
+
+@order_router.get("/order/{order_id}")
+async def get_order(order_id: int, Authorize: AuthJWT = Depends()):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    current_user = Authorize.get_jwt_subject()
+    user = session.query(User).filter(User.username == current_user).first()
+    order = session.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Order not found"
+        )
+    if user.is_staff or order.user_id == user.id:
+        return jsonable_encoder(order)
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="You do not have permission to view this order.",
+    )

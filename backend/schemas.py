@@ -40,11 +40,20 @@ class LoginModel(BaseModel):
     username: str
     password: str
 
-    # class Config:
-    #     from_attributes = True
-    #     json_schema_extra = {
-    #         'example': {
-    #             "username": "johndoe",
-    #             "password": "password"
-    #         }
-    #     }
+
+class OrderModel(BaseModel):
+    id:Optional[int]
+    quantity:int
+    order_status:Optional[str]="PENDING"
+    pizza_size:Optional[str]="SMALL"
+    user_id:Optional[int]
+
+
+    class Config:
+        from_attributes = True
+        json_schema_extra = {
+            'example': {
+                "pizza_size": "SMALL",
+                "quantity": 2,
+            }
+        }

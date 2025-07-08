@@ -29,28 +29,44 @@ async def auth(Authorize: AuthJWT = Depends()):
 
 @auth_router.post("/signup", response_model=UserResponseModel, status_code=status.HTTP_201_CREATED)
 async def signup(user: SignUpModel):
+    # Check for existing email
     db_email = session.query(User).filter(User.email == user.email).first()
     if db_email:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
+            detail="User with this email already exists"
         )
+
+    # Check for existing username
     db_username = session.query(User).filter(User.username == user.username).first()
     if db_username:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already taken"
+            detail="User with this username already exists"
         )
+
+    # Create new user
     new_user = User(
         username=user.username,
         email=user.email,
         password=generate_password_hash(user.password),
         is_active=user.is_active,
-        is_staff=user.is_staff,
+        is_staff=user.is_staff
     )
+
     session.add(new_user)
     session.commit()
-    return new_user
+    session.refresh(new_user)  # ✅ Important to get the ID after commit
+
+    # Return serialized response matching UserResponseModel
+    return {
+        "id": new_user.id,
+        "username": new_user.username,
+        "email": new_user.email,
+        "password": new_user.password,  # Note: Password should not be returned in production
+        "is_staff": new_user.is_staff,
+        "is_active": new_user.is_active
+    }
 
 
 @auth_router.post("/login", status_code=status.HTTP_200_OK)

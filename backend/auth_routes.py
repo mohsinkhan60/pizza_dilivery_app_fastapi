@@ -26,6 +26,7 @@ async def auth(Authorize: AuthJWT = Depends()):
         )
     return {"message": "Hellow Mohsin Khan, this is your auth route!"}
 
+
 @auth_router.post("/signup", response_model=UserResponseModel, status_code=status.HTTP_201_CREATED)
 async def signup(user: SignUpModel):
     db_email = session.query(User).filter(User.email == user.email).first()
@@ -51,6 +52,7 @@ async def signup(user: SignUpModel):
     session.commit()
     return new_user
 
+
 @auth_router.post("/login", status_code=status.HTTP_200_OK)
 async def login(user: LoginModel, Authorize: AuthJWT = Depends()):
     db_user = session.query(User).filter(User.username == user.username).first()
@@ -65,3 +67,19 @@ async def login(user: LoginModel, Authorize: AuthJWT = Depends()):
         })
 
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
+
+@auth_router.post("/refresh", status_code=status.HTTP_200_OK)
+async def refresh_token(Authorize: AuthJWT = Depends()):
+    try:
+        Authorize.jwt_refresh_token_required()
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    current_user = Authorize.get_jwt_subject()
+    access_token = Authorize.create_access_token(subject=current_user)
+    return jsonable_encoder({
+        "access_token": access_token
+    })

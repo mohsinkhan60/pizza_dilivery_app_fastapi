@@ -132,3 +132,19 @@ async def get_specific_order(order_id: int, Authorize: AuthJWT = Depends()):
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Order not found for the current user."
     )
+
+@order_router.put("/order/update/{order_id}", status_code=status.HTTP_200_OK)
+async def update_order(order_id: int, order: OrderModel, Authorize: AuthJWT = Depends()):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    order_to_update = session.query(Order).filter(Order.id == order_id).first()
+    order_to_update.pizza_size = order.pizza_size
+    order_to_update.quantity = order.quantity
+    session.commit()
+    return jsonable_encoder(order_to_update)

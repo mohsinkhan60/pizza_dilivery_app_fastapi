@@ -15,6 +15,11 @@ session = Session()
 
 @order_router.get("/")
 async def hellow(Authorize: AuthJWT = Depends()):
+    """
+    ## A simple route to test JWT authentication.
+    This route returns Hellow Mohsin Khan, this is your order route!
+    """
+    
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -27,6 +32,13 @@ async def hellow(Authorize: AuthJWT = Depends()):
     
 @order_router.post("/order", status_code=status.HTTP_201_CREATED)
 async def create_order(order: OrderModel, Authorize: AuthJWT = Depends()):
+    """
+    ## Create a new order.
+    This requires the folliwing
+    - pizza_size: str
+    - quantity: int
+    """
+    
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -55,6 +67,10 @@ async def create_order(order: OrderModel, Authorize: AuthJWT = Depends()):
 
 @order_router.get("/orders")
 async def get_orders(Authorize: AuthJWT = Depends()):
+    """
+    ## List All Orders.
+    The List of All orders made. It ca be accessed by staff members only.
+    """
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -75,6 +91,10 @@ async def get_orders(Authorize: AuthJWT = Depends()):
 
 @order_router.get("/order/{order_id}")
 async def get_order(order_id: int, Authorize: AuthJWT = Depends()):
+    """
+    ## Get a order by ID.
+    This gets an order by its ID. And is accessible by both staff members and the user who created the order.
+    """
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -100,6 +120,10 @@ async def get_order(order_id: int, Authorize: AuthJWT = Depends()):
 
 @order_router.get("/user/orders")
 async def get_user_orders(Authorize: AuthJWT = Depends()):
+    """
+    ## Get current user's orders.
+    This gets all orders made by the current user.
+    """
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -114,6 +138,10 @@ async def get_user_orders(Authorize: AuthJWT = Depends()):
 
 @order_router.get("/user/order/{order_id}")
 async def get_specific_order(order_id: int, Authorize: AuthJWT = Depends()):
+    """
+    ## Get a specific order for the currently Logged In user.
+    This returns a specific order for the currently logged in user.
+    """
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -135,6 +163,12 @@ async def get_specific_order(order_id: int, Authorize: AuthJWT = Depends()):
 
 @order_router.put("/order/update/{order_id}", status_code=status.HTTP_200_OK)
 async def update_order(order_id: int, order: OrderModel, Authorize: AuthJWT = Depends()):
+    """
+    ## Update an existing order.
+    This updates an existing order. The user must be the owner of the order.
+    - pizza_size: str
+    - quantity: int
+    """
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -151,6 +185,10 @@ async def update_order(order_id: int, order: OrderModel, Authorize: AuthJWT = De
 
 @order_router.delete("/order/delete/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_order(order_id: int, Authorize: AuthJWT = Depends()):
+    """
+    ## Delete an order by ID.
+    This deletes an order by its ID.
+    """
     try:
         Authorize.jwt_required()
     except Exception as e:

@@ -16,6 +16,9 @@ session = Session()
 
 @auth_router.get("/")
 async def auth(Authorize: AuthJWT = Depends()):
+    """
+    ## A simple Hello World route to test JWT authentication.
+    """
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -29,6 +32,17 @@ async def auth(Authorize: AuthJWT = Depends()):
 
 @auth_router.post("/signup", response_model=UserResponseModel, status_code=status.HTTP_201_CREATED)
 async def signup(user: SignUpModel):
+    """
+    ## Create a User.
+    This requires the folliwing
+    ```
+    - username: str
+    - email: str
+    - password: str
+    - is_staff: Optional[bool] = False
+    - is_active: Optional[bool] = True
+    ```
+    """
     # Check for existing email
     db_email = session.query(User).filter(User.email == user.email).first()
     if db_email:
@@ -71,6 +85,15 @@ async def signup(user: SignUpModel):
 
 @auth_router.post("/login", status_code=status.HTTP_200_OK)
 async def login(user: LoginModel, Authorize: AuthJWT = Depends()):
+    """
+    ## Login a User.
+    This requires the folliwing
+    ```
+    - username: str
+    - password: str
+    ```
+    and returns an access token and a refresh token.
+    """
     db_user = session.query(User).filter(User.username == user.username).first()
 
     if db_user and check_password_hash(db_user.password, user.password):
@@ -86,6 +109,10 @@ async def login(user: LoginModel, Authorize: AuthJWT = Depends()):
 
 @auth_router.post("/refresh", status_code=status.HTTP_200_OK)
 async def refresh_token(Authorize: AuthJWT = Depends()):
+    """
+    ## Create a Fresh Token.
+    This creates a fresh access token using the refresh token.
+    """
     try:
         Authorize.jwt_refresh_token_required()
     except Exception:

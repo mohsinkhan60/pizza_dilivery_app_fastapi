@@ -111,3 +111,24 @@ async def get_user_orders(Authorize: AuthJWT = Depends()):
     user = Authorize.get_jwt_subject()
     current_user = session.query(User).filter(User.username == user).first()
     return jsonable_encoder(current_user.orders)
+
+@order_router.get("/user/order/{order_id}")
+async def get_specific_order(order_id: int, Authorize: AuthJWT = Depends()):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    user = Authorize.get_jwt_subject()
+    current_user = session.query(User).filter(User.username == user).first()
+    orders = current_user.orders
+    for order in orders:
+        if order.id == order_id:
+            return jsonable_encoder(order)
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Order not found for the current user."
+    )
